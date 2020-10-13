@@ -5,11 +5,7 @@ from rental_mobil import views as home
 
 # Create your views here.
 def index(request):
-	if request.user.is_authenticated:
-		return redirect(home.index)
-	elif not request.user.is_authenticated:
-		return redirect('user:signin')
-	return render(request, 'user/index.html')
+	return render(request, 'main/userIndex.html')
 
 def signin(request):
 	context = {
@@ -24,7 +20,7 @@ def signin(request):
 		if user is not None:
 			print("youre logged in")
 			login(request, user)
-			return redirect(home.index)
+			return redirect('index_user')
 
 		else:
 			context['message'] = 'Username or Password wrong!';

@@ -1,18 +1,51 @@
 from django.shortcuts import render, redirect
 from .models import Mobil, Pesanan
+from django.db.models import Q
 import datetime
 from rental_mobil.views import index as home
 
 # Create your views here.
 def index(request):
-	mobil_all = Mobil.objects.all()
 
-	context = {
-		'mobil_all':mobil_all,
-		'columns':[1,2,3],
-	}
+    q = request.GET.get('sort')
+    q2 = request.GET.get('filter')
+    mobil_all = Mobil.objects.all()
 
-	return render(request, 'sewa_mobil/car.html', context)
+    sort_murah = mobil_all.order_by('harga')
+    sort_mahal = mobil_all.order_by('-harga')
+    if request.method == "POST":
+        kategori = request.POST.getlist('kategori')
+        transmisi = request.POST.getlist('transmisi')
+        qx = Q()
+        qz = Q()
+        for i in kategori:
+            qx = Q(tipe=i)
+        for j in transmisi:
+            qz = Q(transmisi=j)
+        print(kategori)
+        filtered = mobil_all.filter(qx | qz)
+        # Belum selesai (Nanti disempurnakan dengan django filters)
+        sort_murah = filtered.order_by('harga')
+        sort_mahal = filtered.order_by('-harga')
+
+        context = {
+                'mobil_all':mobil_all,
+                'columns':[1,2,3],
+                'murah':sort_murah,
+                'mahal':sort_mahal,
+                'q':q,
+                'filtered':filtered,
+        }
+    else:
+        context = {
+                'mobil_all':mobil_all,
+                'columns':[1,2,3],
+                'murah':sort_murah,
+                'mahal':sort_mahal,
+                'q':q,
+        }
+
+    return render(request, 'sewa_mobil/car.html', context)
 
 def detail(request, plat):
 	mobil_dipilih = Mobil.objects.get(slug=plat)

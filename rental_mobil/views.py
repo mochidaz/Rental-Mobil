@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 import datetime
 
 def index(request):
+    """
 	if request.user.is_authenticated:
 		pesanan_user = Pesanan.objects.filter(nama_user = request.user.username)
 		seluruh_mobil = Mobil.objects.all()
@@ -21,5 +22,6 @@ def index(request):
 			mobil_terkait.ratinged_by.add(User.objects.get(username=request.user.username))
 			mobil_terkait.save()
 
-		return render(request, 'userIndex.html', context)
-	return render(request, 'index.html')
+		return render(request, 'main/userIndex.html', context)
+                """
+    return render(request, 'main/index.html')
